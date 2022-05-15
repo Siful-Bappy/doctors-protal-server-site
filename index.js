@@ -16,13 +16,22 @@ async function run() {
     try {
       await client.connect(); 
       const servicesCollection = client.db("doctors-portal").collection("services");
-      
+      const bookingCollection = client.db("doctors-portal").collection("bookings");
+
       app.get("/service", async(req, res) => {
           const query = {};
           const cursor = servicesCollection.find(query);
           const services = await cursor.toArray();
           res.send(services);
       })
+
+      app.post("/booking", async(req, res) => {
+        const booking = req.body;
+        const query = {treatment: booking.treatment, date: booking.date, patient: booking.patient}
+        const result = await bookingCollection.insertOne(booking);
+        res.send(result);
+      })
+
     }
     finally{
 
@@ -38,3 +47,24 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`My port is: ${port}`)
 })
+
+
+
+
+
+
+
+
+
+
+
+      
+      /* 
+        API naming convention 
+        1. app.get("/booking")   // get all bookings in this collection. or more than one or filter
+        2. app.get("/booking/:id")  // get a specific booking
+        3. app.post("/booking")  // add a new booking
+        4. app.patch("booking/:id")  // update a new booking
+        5. app.delete("/booking/:id")  // delete a booking
+      */
+
